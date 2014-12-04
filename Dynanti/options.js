@@ -61,6 +61,12 @@ chrome.storage.onChanged.addListener(function(changes, areaName) {
 	if (changes.emails) {
 		updateEmails(changes.emails.newValue);
 	}
+	if (changes.values) {
+		for (var x in changes.values.newValue) {
+			var element = document.getElementById(x);
+			element.value = changes.values.newValue[x];
+		}
+	}
 });
 
 function updateEmails(emails) {
@@ -75,24 +81,30 @@ function updateEmails(emails) {
 }
 
 $('#add-account').click(function(e){
-	var email = $('#email').val();
-	var password = $('#password').val();
-	var domain = $('#domain').val();
+	var email = $('#newemail').val();
+	var password = $('#newpassword').val();
+	var domain = $('#newdomain').val();
 
 	data.emails.get(function(emails){
 		emails.push({email:email, password:password, domain: domain});
 		data.emails.set(emails);
 
 		$('#myModal').modal('hide');
+
+		$('#newemail').val('');
+		$('#newpassword').val('');
+		$('#newdomain').val('');
 	});
 });
 
 $('#emails').click(function(e) {
 	if (e.target.localName == 'button') {
 		login(e);
+		return;
 	}
 	if (e.target.localName == 'i') {
 		removeAccount(e);
+		return;
 	}
 });
 
@@ -107,10 +119,11 @@ function removeAccount(e) {
 	data.emails.get(function(emails) {
 		var newEmails = [];
 		for (var i = 0; i < emails.length; i++) {
-			if (emails[i].email == email && emails[i].domain == domain) {
+			if (emails[i].email.trim() == email.trim() && emails[i].domain.trim() == domain.trim()) {
 				continue;
+			} else {
+				newEmails.push(emails[i]);
 			}
-			newEmails.push(emails[i]);
 		}
 		data.emails.set(newEmails);
 	});

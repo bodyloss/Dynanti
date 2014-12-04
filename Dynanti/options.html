@@ -6,126 +6,75 @@
 	<link type="text/css" rel="stylesheet" href="bootstrap.min.css" />
 	<link type="text/css" rel="stylesheet" href="font-awesome.min.css" />
 	<style type="text/css">
-		.bs-docs-header {
-			padding-top: 60px;
-			padding-bottom: 60px;
-			font-size: 24px;
-			text-align: left;
-			}
-			.bs-docs-header {
-			margin-bottom: 40px;
-			font-size: 20px;
-			}
+	.bs-docs-header {
+		padding-top: 60px;
+		padding-bottom: 60px;
+		font-size: 24px;
+		text-align: left;
+	}
+	.bs-docs-header {
+		margin-bottom: 40px;
+		font-size: 20px;
+	}
 
-			.bs-docs-header {
-			position: relative;
-			padding: 30px 15px;
-			color: #cdbfe3;
-			text-shadow: 0 1px 0 rgba(0,0,0,.1);
-			background-color: #6f5499;
-			background-image: -webkit-gradient(linear,left top,left bottom,from(#563d7c),to(#6f5499));
-			background-image: -webkit-linear-gradient(top,#563d7c 0,#6f5499 100%);
-			background-image: -o-linear-gradient(top,#563d7c 0,#6f5499 100%);
-			background-image: linear-gradient(to bottom,#563d7c 0,#6f5499 100%);
-			filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#563d7c', endColorstr='#6F5499', GradientType=0);
-			background-repeat: repeat-x;
-			}
+	.bs-docs-header {
+		position: relative;
+		padding: 30px 15px;
+		color: #cdbfe3;
+		text-shadow: 0 1px 0 rgba(0,0,0,.1);
+		background-color: #6f5499;
+		background-image: -webkit-gradient(linear,left top,left bottom,from(#563d7c),to(#6f5499));
+		background-image: -webkit-linear-gradient(top,#563d7c 0,#6f5499 100%);
+		background-image: -o-linear-gradient(top,#563d7c 0,#6f5499 100%);
+		background-image: linear-gradient(to bottom,#563d7c 0,#6f5499 100%);
+		filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#563d7c', endColorstr='#6F5499', GradientType=0);
+		background-repeat: repeat-x;
+	}
 	</style>
 </head>
 <body>
 
-<div class="bs-docs-header">
+	<div class="bs-docs-header">
 		<div class="col-md-offset-1">
 			<h1 style="font-size: 48pt;"><i class="fa fa-bolt"></i> Dynanti</h1>
 			<p style="width: 50%">
-				This is a tool to create accounts on any MyAccount website and activate it. Just visit the "Create an account" page on any MyAccount website and click the icon.
+				This is a tool to create accounts on any MyAccount website and activate them automatically. Just visit the "Create an account" page on any MyAccount website and click the icon.
 			</p>
 		</div>
-</div>
-
-<div class="container-fluid">
-	<div class="row">
-		<div class="col-md-4 col-md-offset-1">
-			<h1>Defaults</h1>
-			<br/>
-
-			<form class="form-horizontal" role="form">
-			  <div class="form-group">
-				<label for="forename" class="col-sm-2 control-label">Forename</label>
-				<div class="col-sm-10">
-				  <input type="text" class="form-control" id="forename">
-				</div>
-			  </div>
-
-			  <div class="form-group">
-				<label for="surname" class="col-sm-2 control-label">Surname</label>
-				<div class="col-sm-10">
-				  <input type="text" class="form-control" id="surname">
-				</div>
-			  </div>
-
-			  <div class="form-group">
-				<label for="dobmin" class="col-sm-2 control-label">DOB year min</label>
-				<div class="col-sm-10">
-				  <input type="text" class="form-control" id="dobmin">
-				</div>
-			  </div>
-
-			  <div class="form-group">
-				<label for="dobmax" class="col-sm-2 control-label">DOB year max</label>
-				<div class="col-sm-10">
-				  <input type="text" class="form-control" id="dobmax">
-				</div>
-			  </div>
-
-			  <div class="form-group">
-				<label for="password" class="col-sm-2 control-label">Password</label>
-				<div class="col-sm-10">
-				  <input type="text" class="form-control" id="password">
-				</div>
-			  </div>
-
-			  <div class="form-group">
-				<label for="apikey" class="col-sm-2 control-label">Mailinator API key</label>
-				<div class="col-sm-10">
-				  <input type="text" class="form-control" id="apikey">
-				  <span id="helpBlock" class="help-block">The default API key will most likely be locked out. Visit <a href="http://mailinator.com/">mailinator.com</a> and create an account.
-				  You can find your API key if you visit <a href="https://www.mailinator.com/settings.jsp">settings</a> after creating your account</span>
-				</div>
-			  </div>
-
-			  <div class="form-group">
-				<div class="col-sm-offset-2 col-sm-10">
-				  <button type="submit"  id="save" class="btn btn-success">Save</button>
-				</div>
-			  </div>
-			</form>
-		</div>
-		<div class="col-md-7 ">
-			<h1>Already created
-				<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
-					Add account
-				</button>
-			</h1>
-			<br/>
-			<div id="emails"></div>
-		</div>
 	</div>
-</div>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-dialog">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-				<h4 class="modal-title" id="myModalLabel">Modal title</h4>
-			</div>
-			<div class="modal-body">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-4 col-md-offset-1">
+				<h1>Defaults</h1>
+				<br/>
+
 				<form class="form-horizontal" role="form">
 					<div class="form-group">
-						<label for="Email" class="col-sm-2 control-label">Email</label>
+						<label for="forename" class="col-sm-2 control-label">Forename</label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="email">
+							<input type="text" class="form-control" id="forename">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="surname" class="col-sm-2 control-label">Surname</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="surname">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="dobmin" class="col-sm-2 control-label">DOB year min</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="dobmin">
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="dobmax" class="col-sm-2 control-label">DOB year max</label>
+						<div class="col-sm-10">
+							<input type="text" class="form-control" id="dobmax">
 						</div>
 					</div>
 
@@ -137,23 +86,74 @@
 					</div>
 
 					<div class="form-group">
-						<label for="domain" class="col-sm-2 control-label">Domain</label>
+						<label for="apikey" class="col-sm-2 control-label">Mailinator API key</label>
 						<div class="col-sm-10">
-							<input type="text" class="form-control" id="domain">
-							<span id="helpBlock" class="help-block">This is the full url to the base of the site including a trailing /, i.e. <i>https://myacclutu.psc.agilisys.co.uk/MyAccountTest/</i></span>
+							<input type="text" class="form-control" id="apikey">
+							<span id="helpBlock" class="help-block">The default API key will most likely be locked out. Visit <a href="http://mailinator.com/">mailinator.com</a> and create an account.
+								You can find your API key if you visit <a href="https://www.mailinator.com/settings.jsp">settings</a> after creating your account</span>
+							</div>
 						</div>
-					</div>
-			</div>
-			<div class="modal-footer">
-				<button type="button" class="btn btn-primary" id="add-account">Add</button>
+
+						<div class="form-group">
+							<div class="col-sm-offset-2 col-sm-10">
+								<button type="submit"  id="save" class="btn btn-success">Save</button>
+							</div>
+						</div>
+					</form>
+				</div>
+				<div class="col-md-7 ">
+					<h1>Already created
+						<button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal">
+							Add account
+						</button>
+					</h1>
+					<br/>
+					<div id="emails"></div>
+				</div>
 			</div>
 		</div>
-	</div>
-</div>
+
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-dialog">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<h4 class="modal-title" id="myModalLabel">Modal title</h4>
+					</div>
+					<div class="modal-body">
+						<form class="form-horizontal" role="form">
+							<div class="form-group">
+								<label for="newemail" class="col-sm-2 control-label">Email</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="newemail">
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="newpassword" class="col-sm-2 control-label">Password</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="newpassword">
+								</div>
+							</div>
+
+							<div class="form-group">
+								<label for="newdomain" class="col-sm-2 control-label">Domain</label>
+								<div class="col-sm-10">
+									<input type="text" class="form-control" id="newdomain">
+									<span id="helpBlock" class="help-block">This is the full url to the base of the site including a trailing /, i.e. <i>https://myacclutu.psc.agilisys.co.uk/MyAccountTest/</i></span>
+								</div>
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-primary" id="add-account">Add</button>
+						</div>
+					</div>
+				</div>
+			</div>
 
 
-<script type="text/javascript" src="jquery-2.1.1.min.js"></script>
-<script type="text/javascript" src="bootstrap.min.js"></script>
-<script type="text/javascript" src="options.js"></script>
-</body>
-</html>
+			<script type="text/javascript" src="jquery-2.1.1.min.js"></script>
+			<script type="text/javascript" src="bootstrap.min.js"></script>
+			<script type="text/javascript" src="options.js"></script>
+		</body>
+		</html>

@@ -14,9 +14,9 @@ chrome.storage.local.get('values', function(data) {
 });
 
 chrome.browserAction.onClicked.addListener(function(tab) {
-  chrome.tabs.executeScript(tab.id, { file: "jquery-2.1.1.min.js" }, function() {
-    chrome.tabs.executeScript(tab.id, { file: "createusers.js" });
-  });
+	chrome.tabs.executeScript(tab.id, { file: "jquery-2.1.1.min.js" }, function() {
+		chrome.tabs.executeScript(tab.id, { file: "createusers.js" });
+	});
 });
 
 chrome.runtime.onMessage.addListener(
@@ -60,93 +60,93 @@ function verifyEmail(email, tries, sender) {
 
 		$.get('https://api.mailinator.com/api/inbox?token='+token+'&to='+email.email,
 		//$.get('mocks/inbox.json',
-			function(dataStr) {
+		function(dataStr) {
 
-				var data = JSON.parse(dataStr);
-				console.log('inbox size: ' + data.messages.length);
+			var data = JSON.parse(dataStr);
+			console.log('inbox size: ' + data.messages.length);
 
-				if (data.messages.length == 1) {
+			if (data.messages.length == 1) {
 
-					console.log('requesting message: ' + data.messages[0].id);
-					$.get('https://api.mailinator.com/api/email?token='+token+'&msgid=' + data.messages[0].id, function(messageStr) {
+				console.log('requesting message: ' + data.messages[0].id);
+				$.get('https://api.mailinator.com/api/email?token='+token+'&msgid=' + data.messages[0].id, function(messageStr) {
 					//$.get('mocks/message.json', function(messageStr) {
-						var message = JSON.parse(messageStr);
+					var message = JSON.parse(messageStr);
 
-						var link = /https:\/\/.*IR1_VerifyFromEmail.*"/.exec(message.data.parts[0].body)[0].replace('"', '');
+					var link = /https:\/\/.*IR1_VerifyFromEmail.*"/.exec(message.data.parts[0].body)[0].replace('"', '');
 
-						console.log('got link: ' + link);
+					console.log('got link: ' + link);
 
-						$.get(link, function() {
-							console.log('returning with success');
+					$.get(link, function() {
+						console.log('returning with success');
 
-							storeEmail(email);
+						storeEmail(email);
 
-							chrome.notifications.create('success', {
-								type: 'basic',
-								title: 'Success',
-								message: 'Activated account ' + email.email + '@mailinator.com',
-								isClickable: true,
-								iconUrl: 'icon.png',
-								buttons: [
-									{ title: 'Login' }
-								]
-							}, function(){});
-							chrome.notifications.onButtonClicked.addListener(function(nid, bid) {
-								if (nid == 'success') {
-									chrome.tabs.create({url: domain + 'IL1_Login.aspx'}, function(tab) {
-										chrome.tabs.executeScript(tab.id, { file: "jquery-2.1.1.min.js" }, function() {
-											chrome.tabs.executeScript(tab.id, { file: "login.js" }, function() {
-												chrome.storage.local.get('values', function(values){
-													chrome.tabs.sendMessage(tab.id, {email: email.email, password: value.values.email});
-												});
+						chrome.notifications.create('success', {
+							type: 'basic',
+							title: 'Success',
+							message: 'Activated account ' + email.email + '@mailinator.com',
+							isClickable: true,
+							iconUrl: 'icon.png',
+							buttons: [
+							{ title: 'Login' }
+							]
+						}, function(){});
+						chrome.notifications.onButtonClicked.addListener(function(nid, bid) {
+							if (nid == 'success') {
+								chrome.tabs.create({url: domain + 'IL1_Login.aspx'}, function(tab) {
+									chrome.tabs.executeScript(tab.id, { file: "jquery-2.1.1.min.js" }, function() {
+										chrome.tabs.executeScript(tab.id, { file: "login.js" }, function() {
+											chrome.storage.local.get('values', function(values){
+												chrome.tabs.sendMessage(tab.id, {email: email.email, password: value.values.email});
 											});
 										});
 									});
-								}
-							});
-						}).fail(function(err){
-							console.dir(err);
-							chrome.notifications.create('error', {
-								type: 'basic',
-								title: 'Error',
-								message: 'Failed to activate account: ' + error.message,
-								iconUrl: 'icon.png'
-							}, function(){});
-						});
-					});
-				} else {
-					if (tries < maxTries) {
-						setTimeout(function() {
-							verifyEmail(email, tries + 1, sender);
-						}, waitTime);
-					} else {
-						chrome.notifications.create('error-no-activation-email', {
-							type: 'basic',
-							title: 'Error',
-							message: 'Failed to retreive activation email after 20 seconds',
-							buttons: [
-								{ title: 'Activate manually' }
-							],
-							iconUrl: 'icon.png'
-						}, function(){});
-						chrome.notifications.onButtonClicked.addListener(function(nid, bid) {
-							if (nid == 'error-no-activation-email') {
-								chrome.tabs.create({url: 'http://mailinator.com/inbox.jsp?to=' + email.email});
+								});
 							}
 						});
-					}
+					}).fail(function(err){
+						console.dir(err);
+						chrome.notifications.create('error', {
+							type: 'basic',
+							title: 'Error',
+							message: 'Failed to activate account: ' + error.message,
+							iconUrl: 'icon.png'
+						}, function(){});
+					});
+				});
+			} else {
+				if (tries < maxTries) {
+					setTimeout(function() {
+						verifyEmail(email, tries + 1, sender);
+					}, waitTime);
+				} else {
+					chrome.notifications.create('error-no-activation-email', {
+						type: 'basic',
+						title: 'Error',
+						message: 'Failed to retreive activation email after 20 seconds',
+						buttons: [
+						{ title: 'Activate manually' }
+						],
+						iconUrl: 'icon.png'
+					}, function(){});
+					chrome.notifications.onButtonClicked.addListener(function(nid, bid) {
+						if (nid == 'error-no-activation-email') {
+							chrome.tabs.create({url: 'http://mailinator.com/inbox.jsp?to=' + email.email});
+						}
+					});
 				}
 			}
-		).fail(function(err) {
-			console.dir(err);
-			chrome.notifications.create('error-no-inboxes', {
-				type: 'basic',
-				title: 'Error',
-				message: 'Failed to retreive inbox from mailinator api. Most likely your api key is locked out, create an account on mailinator and then change set your key in the settings',
-				iconUrl: 'icon.png'
-			}, function(){});
-		});
+		}
+	).fail(function(err) {
+		console.dir(err);
+		chrome.notifications.create('error-no-inboxes', {
+			type: 'basic',
+			title: 'Error',
+			message: 'Failed to retreive inbox from mailinator api. Most likely your api key is locked out, create an account on mailinator and then change set your key in the settings',
+			iconUrl: 'icon.png'
+		}, function(){});
 	});
+});
 }
 
 function storeEmail(email) {
