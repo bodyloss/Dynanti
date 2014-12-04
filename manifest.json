@@ -1,0 +1,29 @@
+{
+  "manifest_version": 2,
+
+  "author": "Joey Ciechanowicz",
+
+  "name": "Dynanti",
+  "description": "This extension creates a user on the MyAccount page you are currently viewing.",
+  "version": "1.0",
+  "options_page": "options.html",
+
+  "permissions": [
+	"storage",
+	"tabs",
+	"notifications",
+	"http://*/*",
+	"https://*/*"
+  ],
+  "browser_action": {
+    "default_icon": "icon.png"
+  },
+  "background": {
+	"scripts": ["jquery-2.1.1.min.js", "background.js"]
+  },
+  "web_accessible_resources": [
+    "icon.png",
+	"options.html",
+	"options.js"
+  ]
+}
