@@ -4,7 +4,7 @@ var defaults = {
 	'dobmin': 1970,
 	'dobmax': 1992,
 	'password': 'Welcome123',
-	'apikey': 'a02fa2c95c2940ee95ec4563baee6c2'
+	'apikey': 'a02fa2c95c2940ee95ec4563baee6c2d'
 };
 
 chrome.storage.local.get('values', function(data) {
@@ -27,7 +27,7 @@ chrome.runtime.onMessage.addListener(
 			console.dir(request.dir);
 		} else if (request.verify) {
 			verifyEmail(request.verify, 0, sender);
-		}		
+		}
 	}
 );
 
@@ -35,13 +35,11 @@ var maxTries = 4;
 var waitTime = 5000;
 
 function verifyEmail(email, tries, sender) {
-	console.dir(email);
-
 	console.log('Requesting inbox: ' + email.email);
-	
+
 	chrome.storage.local.get('values', function(data) {
 		var token = data.values.apikey;
-		
+
 		if (tries == 0) {
 			chrome.notifications.create('email-progress', {
 				type: 'progress',
@@ -59,30 +57,30 @@ function verifyEmail(email, tries, sender) {
 				iconUrl: 'icon.png'
 			}, function(){});
 		}
-	
+
 		$.get('https://api.mailinator.com/api/inbox?token='+token+'&to='+email.email,
 		//$.get('mocks/inbox.json',
 			function(dataStr) {
-			
+
 				var data = JSON.parse(dataStr);
 				console.log('inbox size: ' + data.messages.length);
-				
+
 				if (data.messages.length == 1) {
-				
+
 					console.log('requesting message: ' + data.messages[0].id);
 					$.get('https://api.mailinator.com/api/email?token='+token+'&msgid=' + data.messages[0].id, function(messageStr) {
 					//$.get('mocks/message.json', function(messageStr) {
 						var message = JSON.parse(messageStr);
-						
+
 						var link = /https:\/\/.*IR1_VerifyFromEmail.*"/.exec(message.data.parts[0].body)[0].replace('"', '');
-						
+
 						console.log('got link: ' + link);
-						
+
 						$.get(link, function() {
 							console.log('returning with success');
-							
+
 							storeEmail(email);
-							
+
 							chrome.notifications.create('success', {
 								type: 'basic',
 								title: 'Success',
@@ -90,15 +88,23 @@ function verifyEmail(email, tries, sender) {
 								isClickable: true,
 								iconUrl: 'icon.png',
 								buttons: [
-									{ title: 'View activated accounts' }
+									{ title: 'Login' }
 								]
 							}, function(){});
 							chrome.notifications.onButtonClicked.addListener(function(nid, bid) {
 								if (nid == 'success') {
-									chrome.tabs.create({url: chrome.extension.getURL('options.html')});
+									chrome.tabs.create({url: domain + 'IL1_Login.aspx'}, function(tab) {
+										chrome.tabs.executeScript(tab.id, { file: "jquery-2.1.1.min.js" }, function() {
+											chrome.tabs.executeScript(tab.id, { file: "login.js" }, function() {
+												chrome.storage.local.get('values', function(values){
+													chrome.tabs.sendMessage(tab.id, {email: email.email, password: value.values.email});
+												});
+											});
+										});
+									});
 								}
 							});
-						}).fail(function(err){	
+						}).fail(function(err){
 							console.dir(err);
 							chrome.notifications.create('error', {
 								type: 'basic',
@@ -150,7 +156,7 @@ function storeEmail(email) {
 		var domain = getDomainFromWholeUrl(email.url);
 		emails.push({
 			email: email.wholeEmail,
-			domain: domain, 
+			domain: domain,
 			password: data.values.password
 		});
 		chrome.storage.local.set({'emails': emails});
@@ -163,7 +169,3 @@ function getDomainFromWholeUrl(url) {
 	var m = re.exec(url)
 	return m[1];
 }
-
-
-
-
