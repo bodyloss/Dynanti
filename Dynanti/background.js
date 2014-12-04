@@ -7,6 +7,10 @@ var defaults = {
 	'apikey': 'a02fa2c95c2940ee95ec4563baee6c2d'
 };
 
+
+var maxTries = 4;
+var waitTime = 5000;
+
 chrome.storage.local.get('values', function(data) {
 	if (!data.values) {
 		chrome.storage.local.set({values: defaults});
@@ -26,37 +30,19 @@ chrome.runtime.onMessage.addListener(
 		} else if (request.dir) {
 			console.dir(request.dir);
 		} else if (request.verify) {
-			verifyEmail(request.verify, 0, sender);
+			setTimeout(function() {
+				verifyEmail(request.verify, 1, sender);
+			}, waitTime);
 		}
 	}
 );
 
-var maxTries = 4;
-var waitTime = 5000;
 
 function verifyEmail(email, tries, sender) {
 	console.log('Requesting inbox: ' + email.email);
 
 	chrome.storage.local.get('values', function(data) {
 		var token = data.values.apikey;
-
-		if (tries == 0) {
-			chrome.notifications.create('email-progress', {
-				type: 'progress',
-				title: 'Activating account',
-				message: '',
-				progress: (tries / maxTries) * 100,
-				iconUrl: 'icon.png'
-			}, function(){});
-		} else {
-			chrome.notifications.update('email-progress', {
-				type: 'progress',
-				title: 'Activating account',
-				message: '',
-				progress: (tries / maxTries) * 100,
-				iconUrl: 'icon.png'
-			}, function(){});
-		}
 
 		$.get('https://api.mailinator.com/api/inbox?token='+token+'&to='+email.email,
 		//$.get('mocks/inbox.json',
@@ -81,28 +67,26 @@ function verifyEmail(email, tries, sender) {
 
 						storeEmail(email);
 
-						chrome.notifications.create('success', {
+						chrome.notifications.create('success' + email.email, {
 							type: 'basic',
 							title: 'Success',
 							message: 'Activated account ' + email.email + '@mailinator.com',
 							isClickable: true,
-							iconUrl: 'icon.png',
+							iconUrl: 'icon48.png',
 							buttons: [
 							{ title: 'Login' }
 							]
 						}, function(){});
 						chrome.notifications.onButtonClicked.addListener(function(nid, bid) {
-							if (nid == 'success') {
-								chrome.tabs.create({url: domain + 'IL1_Login.aspx'}, function(tab) {
-									chrome.tabs.executeScript(tab.id, { file: "jquery-2.1.1.min.js" }, function() {
-										chrome.tabs.executeScript(tab.id, { file: "login.js" }, function() {
-											chrome.storage.local.get('values', function(values){
-												chrome.tabs.sendMessage(tab.id, {email: email.email, password: value.values.email});
-											});
+							chrome.tabs.create({url: getDomainFromWholeUrl(email.url) + 'IL1_Login.aspx'}, function(tab) {
+								chrome.tabs.executeScript(tab.id, { file: "jquery-2.1.1.min.js" }, function() {
+									chrome.tabs.executeScript(tab.id, { file: "login.js" }, function() {
+										chrome.storage.local.get('values', function(values){
+											chrome.tabs.sendMessage(tab.id, {email: email.wholeEmail, password: values.values.password});
 										});
 									});
 								});
-							}
+							});
 						});
 					}).fail(function(err){
 						console.dir(err);
@@ -110,7 +94,7 @@ function verifyEmail(email, tries, sender) {
 							type: 'basic',
 							title: 'Error',
 							message: 'Failed to activate account: ' + error.message,
-							iconUrl: 'icon.png'
+							iconUrl: 'icon48.png'
 						}, function(){});
 					});
 				});
@@ -123,11 +107,11 @@ function verifyEmail(email, tries, sender) {
 					chrome.notifications.create('error-no-activation-email', {
 						type: 'basic',
 						title: 'Error',
-						message: 'Failed to retreive activation email after 20 seconds',
+						message: 'Failed to retreive activation email after ' + ((maxTries * waitTime) / 1000) + ' seconds',
 						buttons: [
 						{ title: 'Activate manually' }
 						],
-						iconUrl: 'icon.png'
+						iconUrl: 'icon48.png'
 					}, function(){});
 					chrome.notifications.onButtonClicked.addListener(function(nid, bid) {
 						if (nid == 'error-no-activation-email') {
@@ -143,7 +127,7 @@ function verifyEmail(email, tries, sender) {
 			type: 'basic',
 			title: 'Error',
 			message: 'Failed to retreive inbox from mailinator api. Most likely your api key is locked out, create an account on mailinator and then change set your key in the settings',
-			iconUrl: 'icon.png'
+			iconUrl: 'icon48.png'
 		}, function(){});
 	});
 });
@@ -164,7 +148,6 @@ function storeEmail(email) {
 }
 
 function getDomainFromWholeUrl(url) {
-	console.log('url: ' + url);
 	var re = /(http[s]?:\/\/[a-zA-Z0-9.\/_]+)PublicPages\/IR1_Register.aspx/;
 	var m = re.exec(url)
 	return m[1];
